@@ -1,0 +1,7 @@
+{
+  "name": "[record page] Unified Sched Flow",
+  "description": "An enterprise-grade Salesforce Account record page with integrated scheduling wizard actions, branching flows, and real-time validation.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
