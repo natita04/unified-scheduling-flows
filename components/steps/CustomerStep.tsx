@@ -1,18 +1,18 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Search, 
-  Check, 
-  X, 
-  User, 
-  Settings2, 
-  Link, 
-  Mail, 
-  Plus, 
-  ChevronDown, 
-  MapPin, 
-  Building2, 
-  Phone, 
+import {
+  Search,
+  Check,
+  X,
+  User,
+  Settings2,
+  Link,
+  Mail,
+  Plus,
+  ChevronDown,
+  MapPin,
+  Building2,
+  Phone,
   Video,
   Wrench,
   Users,
@@ -20,15 +20,17 @@ import {
   HelpCircle,
   Contact,
   Calendar,
-  Stethoscope
+  Stethoscope,
+  RotateCcw
 } from 'lucide-react';
-import { SchedulingState, Customer, WorkType, ServiceMode } from '../../types';
-import { MOCK_CUSTOMERS } from '../../constants';
+import { SchedulingState, Customer, WorkType, ServiceMode, Resource } from '../../types';
+import { MOCK_CUSTOMERS, MOCK_RESOURCES } from '../../constants';
 
 interface Props {
   state: SchedulingState;
   updateState: (updates: Partial<SchedulingState>) => void;
   onFastTrack: () => void;
+  onBookAgain: (workType: WorkType, serviceMode: ServiceMode, resource: Resource) => void;
 }
 
 const ALL_WORK_TYPES = [
@@ -51,27 +53,30 @@ const SERVICE_MODES = [
 const LATEST_APPOINTMENTS = [
   {
     id: 'la1',
-    name: 'Brooke Weaver',
-    role: 'Technician',
-    workType: 'Repair',
-    mode: 'In-Field',
+    resourceId: 'r1',
+    workType: WorkType.INSTALLATION,
+    label: 'Installation',
+    serviceMode: ServiceMode.IN_FIELD,
     date: 'Apr 18, 2025',
-    avatar: 'https://picsum.photos/seed/brooke/100/100',
-    initials: 'BW'
   },
   {
     id: 'la2',
-    name: 'Allison Baker',
-    role: 'Registered Nurse',
-    workType: 'Health Check-Up',
-    mode: 'On-Site',
+    resourceId: 'r22',
+    workType: WorkType.BLOOD_TEST,
+    label: 'Blood Test',
+    serviceMode: ServiceMode.ONSITE,
     date: 'May 20, 2025',
-    avatar: null,
-    initials: 'AB'
-  }
+  },
 ];
 
-export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack }) => {
+const MODE_CONFIG = {
+  [ServiceMode.IN_FIELD]: { icon: MapPin,    dotBg: 'bg-rose-400',    chipBg: 'bg-rose-50',    chipText: 'text-rose-600'    },
+  [ServiceMode.ONSITE]:   { icon: Building2, dotBg: 'bg-blue-500',   chipBg: 'bg-blue-50',   chipText: 'text-blue-600'   },
+  [ServiceMode.PHONE]:    { icon: Phone,     dotBg: 'bg-emerald-500', chipBg: 'bg-emerald-50', chipText: 'text-emerald-600' },
+  [ServiceMode.VIDEO]:    { icon: Video,     dotBg: 'bg-violet-500',  chipBg: 'bg-violet-50',  chipText: 'text-violet-600'  },
+};
+
+export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack, onBookAgain }) => {
   // Customer Selection State
   const [customerSearch, setCustomerSearch] = useState('');
   const [isCustomerOpen, setIsCustomerOpen] = useState(false);
@@ -303,42 +308,59 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack 
 
           {/* Latest Appointments Expanded View */}
           {showLatest && selectedCustomer && (
-            <div className="mt-4 space-y-3 animate-in slide-in-from-top-4 duration-300">
-              {LATEST_APPOINTMENTS.map(apt => (
-                <div key={apt.id} className="border-[#0176d3] border-[1.5px] rounded-[1.25rem] p-4 flex items-center gap-4 bg-white shadow-sm transition-all hover:shadow-md">
-                  <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-100">
-                    {apt.avatar ? (
-                      <img src={apt.avatar} alt={apt.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-gray-500 font-bold text-sm">{apt.initials}</span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline truncate">
-                      <span className="text-[#0176d3] text-[15px] font-bold">{apt.name}</span>
-                      <span className="mx-1 text-[#0176d3] opacity-60">•</span>
-                      <span className="text-[#0176d3] text-[13px] font-medium truncate">{apt.role}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      <div className="bg-[#f3f3f3] px-2.5 py-0.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
-                        {apt.workType.toLowerCase().includes('repair') ? <Wrench size={12} className="text-emerald-500" /> : <Stethoscope size={12} className="text-emerald-500" />}
-                        {apt.workType}
+            <div className="mt-3 space-y-2.5 animate-in slide-in-from-top-4 duration-300">
+              {LATEST_APPOINTMENTS.map(apt => {
+                const resource = MOCK_RESOURCES.find(r => r.id === apt.resourceId);
+                if (!resource) return null;
+                const modeConfig = MODE_CONFIG[apt.serviceMode];
+                const ModeIcon = modeConfig.icon;
+                const WorkTypeIcon = apt.workType === WorkType.BLOOD_TEST ? Stethoscope : Wrench;
+                return (
+                  <div key={apt.id} className="rounded-xl border border-gray-100 p-3.5 bg-white shadow-sm hover:shadow-md hover:border-blue-200 transition-all flex items-center gap-3.5">
+                    {/* Avatar with mode dot */}
+                    <div className="relative shrink-0">
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-100">
+                        <img src={resource.avatar} alt={resource.name} className="w-full h-full object-cover" />
                       </div>
-                      <div className="bg-[#f3f3f3] px-2.5 py-0.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
-                        <MapPin size={12} className="text-rose-400 fill-rose-400/20" />
-                        {apt.mode}
-                      </div>
-                      <div className="bg-[#f3f3f3] px-2.5 py-0.5 rounded-full flex items-center gap-1.5 text-[11px] font-bold text-gray-700">
-                        <Calendar size={12} className="text-[#001639]" />
-                        {apt.date}
+                      <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${modeConfig.dotBg}`}>
+                        <ModeIcon size={8} className="text-white" />
                       </div>
                     </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <span className="text-[13px] font-bold text-gray-900 truncate">{resource.name}</span>
+                        <span className="text-gray-300">·</span>
+                        <span className="text-[11px] text-gray-400 font-medium truncate">{resource.role}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md text-[11px] font-semibold text-gray-600">
+                          <WorkTypeIcon size={10} className="text-gray-400" />
+                          {apt.label}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${modeConfig.chipBg} ${modeConfig.chipText}`}>
+                          <ModeIcon size={10} />
+                          {apt.serviceMode}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-400">
+                          <Calendar size={10} />
+                          {apt.date}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Book Again */}
+                    <button
+                      onClick={() => onBookAgain(apt.workType, apt.serviceMode, resource)}
+                      className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 bg-[#0176d3] text-white text-[12px] font-bold rounded-lg hover:bg-blue-700 active:scale-95 transition-all shadow-sm shadow-blue-500/20"
+                    >
+                      <RotateCcw size={12} />
+                      Book Again
+                    </button>
                   </div>
-                  <button className="bg-[#0176d3] text-white px-4 py-1.5 rounded-full text-[12px] font-bold hover:bg-blue-700 transition-colors shadow-sm shrink-0">
-                    Book Again
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

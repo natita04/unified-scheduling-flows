@@ -31,6 +31,7 @@ export const MOCK_RESOURCES: Resource[] = [
   { id: 'r19', name: 'Generator Unit #01', role: 'Equipment', avatar: 'https://picsum.photos/seed/gen/100/100', type: ResourceType.ASSET },
   { id: 'r20', name: 'Forklift #09', role: 'Vehicle', avatar: 'https://picsum.photos/seed/fork/100/100', type: ResourceType.ASSET },
   { id: 'r21', name: 'Technical Support Pod 4', role: 'Workspace', avatar: 'https://picsum.photos/seed/pod/100/100', type: ResourceType.ASSET },
+  { id: 'r22', name: 'Allison Baker', role: 'Registered Nurse', avatar: 'https://picsum.photos/seed/allison/100/100', type: ResourceType.PERSON },
 ];
 
 export const STEP_LABELS = [

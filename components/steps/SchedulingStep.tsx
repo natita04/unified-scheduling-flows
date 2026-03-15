@@ -29,9 +29,9 @@ const DEFAULT_RECURRENCE: RecurrenceConfig = {
   interval: 1,
   unit: 'week',
   days: ['T'],
-  endType: 'never',
-  endDate: 'May 19, 2026',
-  occurrences: 13
+  endType: 'after',
+  endDate: '',
+  occurrences: 6
 };
 
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -67,6 +67,19 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
     }
   }, [state.date]);
 
+  const getDefaultRecurrence = (): RecurrenceConfig => ({
+    interval: 1,
+    unit: 'week',
+    days: [DAYS[currentDate.getDay()]],
+    endType: 'after',
+    endDate: '',
+    occurrences: 6,
+  });
+
+  const showRecurring =
+    state.serviceMode !== ServiceMode.IN_FIELD &&
+    (state.schedulingTab === 'SLOTS' || state.resources.length === 1);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -100,10 +113,11 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
     if (isSelected) {
       removeResource(resource.id);
     } else {
-      updateState({ 
-        resources: [...state.resources, resource], 
+      updateState({
+        resources: [...state.resources, resource],
         fastTrackUsed: false,
-        date: state.date || 'Fri, April 18, 2025'
+        date: state.date || 'Fri, April 18, 2025',
+        isRecurring: false,
       });
       setSearchTerm('');
     }
@@ -497,25 +511,37 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
                   </div>
                 </button>
 
-                {isSelected && (
+                {isSelected && showRecurring && (
                 <div className="px-1 pb-2 animate-in slide-in-from-top-2 duration-300">
                   <div className="flex items-center gap-2.5 py-1">
-                    <div 
-                      onClick={() => updateState({ isRecurring: !state.isRecurring })}
+                    <div
+                      onClick={() => {
+                        if (!state.isRecurring) {
+                          updateState({ isRecurring: true, recurrenceConfig: getDefaultRecurrence() });
+                        } else {
+                          updateState({ isRecurring: false });
+                        }
+                      }}
                       className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all cursor-pointer shadow-sm ${
                         state.isRecurring ? 'bg-[#0176d3] border-[#0176d3]' : 'bg-white border-gray-300 hover:border-blue-400'
                       }`}
                     >
                       {state.isRecurring && <Check size={14} strokeWidth={4} className="text-white" />}
                     </div>
-                    <span 
+                    <span
                       className="text-[13px] font-bold text-gray-700 cursor-pointer select-none"
-                      onClick={() => updateState({ isRecurring: !state.isRecurring })}
+                      onClick={() => {
+                        if (!state.isRecurring) {
+                          updateState({ isRecurring: true, recurrenceConfig: getDefaultRecurrence() });
+                        } else {
+                          updateState({ isRecurring: false });
+                        }
+                      }}
                     >
                       Make recurring
                     </span>
                   </div>
-                  
+
                   {state.isRecurring && (
                     <div className="mt-3">
                       <RecurrencePanel />
@@ -549,7 +575,9 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
           )}
           {state.isRecurring && (
             <p className="text-[11px] font-medium text-[#0070d2] leading-tight">
-              We'll try to assign the same resource each session, but this can't always be guaranteed.
+              {state.schedulingTab === 'RESOURCES'
+                ? "Your selected resource will be available for 5 out of 6 appointments. An alternative resource will be assigned for the remaining appointments."
+                : "We'll try to assign the same resource each session, but this can't always be guaranteed."}
             </p>
           )}
         </div>

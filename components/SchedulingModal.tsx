@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { X, ChevronLeft, AlertTriangle, Info } from 'lucide-react';
-import { Step, SchedulingState, ServiceMode, WorkType } from '../types';
+import { Step, SchedulingState, ServiceMode, WorkType, Resource } from '../types';
 import { STEP_LABELS, MOCK_CUSTOMERS } from '../constants';
 import { CustomerStep } from './steps/CustomerStep';
 import { LocationStep } from './steps/LocationStep';
@@ -93,6 +93,25 @@ export const SchedulingModal: React.FC<SchedulingModalProps> = ({ isOpen, onClos
     }
   };
 
+  const handleBookAgain = (workType: WorkType, serviceMode: ServiceMode, resource: Resource) => {
+    const isMultiCustomer = workType === WorkType.WORKSHOP;
+    const isMultiResource = workType === WorkType.TRIAL;
+    setState({
+      ...INITIAL_STATE,
+      customers: state.customers,
+      workType,
+      serviceMode,
+      resources: [resource],
+      schedulingTab: 'RESOURCES',
+      isMultiCustomer,
+      isMultiResource,
+      location: serviceMode === ServiceMode.ONSITE
+        ? (state.customers[0]?.address || '')
+        : '',
+    });
+    setCurrentStep(Step.SCHEDULING);
+  };
+
   const handleFinish = async () => {
     if (onFinish) {
       onFinish(state);
@@ -112,13 +131,13 @@ export const SchedulingModal: React.FC<SchedulingModalProps> = ({ isOpen, onClos
     switch (currentStep) {
       case Step.CUSTOMER_AND_WORK:
         return <CustomerStep state={state} updateState={updateState} onFastTrack={() => {
-          updateState({ 
-            workType: WorkType.INSTALLATION, 
-            serviceMode: ServiceMode.IN_FIELD, 
-            fastTrackUsed: true 
+          updateState({
+            workType: WorkType.INSTALLATION,
+            serviceMode: ServiceMode.IN_FIELD,
+            fastTrackUsed: true
           });
           setCurrentStep(Step.SCHEDULING);
-        }} />;
+        }} onBookAgain={handleBookAgain} />;
       case Step.LOCATION:
         return <LocationStep state={state} updateState={updateState} />;
       case Step.SCHEDULING:
