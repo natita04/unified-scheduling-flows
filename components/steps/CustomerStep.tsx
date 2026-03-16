@@ -405,7 +405,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
             </div>
             
             {isWorkOpen && (
-              <div className="absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-top-2">
+              <div className="absolute z-50 w-full bottom-full mb-2 bg-white border border-gray-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-2">
                 <div className="max-h-64 overflow-y-auto custom-scrollbar py-1.5 px-1">
                   {filteredRecent.length === 0 && filteredAll.length === 0 ? (
                     <div className="px-3 py-6 text-center"><p className="text-[12px] text-gray-400 italic">No matching work types found</p></div>
