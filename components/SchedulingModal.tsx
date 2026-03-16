@@ -20,8 +20,8 @@ const INITIAL_STATE: SchedulingState = {
   // Defaulting to the first customer (Acme Corp) as requested
   customers: [MOCK_CUSTOMERS[0]],
   isOpenForSigning: false,
-  workType: null,
-  serviceMode: null,
+  workType: WorkType.GENERAL,
+  serviceMode: ServiceMode.ONSITE,
   resources: [],
   optionalResourceIds: [],
   location: '',

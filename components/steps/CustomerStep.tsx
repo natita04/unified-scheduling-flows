@@ -33,14 +33,19 @@ interface Props {
   onBookAgain: (workType: WorkType, serviceMode: ServiceMode, resource: Resource) => void;
 }
 
-const ALL_WORK_TYPES = [
-  WorkType.INSTALLATION,
+const RECENTLY_SCHEDULED_TYPES = [
+  WorkType.GENERAL,
   WorkType.WORKSHOP,
   WorkType.VIRTUAL,
-  WorkType.TRIAL,
-  WorkType.GENERAL,
+];
+
+const ALL_WORK_TYPES = [
+  WorkType.INSTALLATION,
   WorkType.BREAK_FIX,
-  WorkType.BLOOD_TEST
+  WorkType.BLOOD_TEST,
+  WorkType.TRIAL,
+  WorkType.INSPECTION,
+  WorkType.MORTGAGE_ADVICE,
 ];
 
 const SERVICE_MODES = [
@@ -139,26 +144,24 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
 
     if (type === WorkType.INSTALLATION) {
       nextMode = ServiceMode.IN_FIELD;
-      nextIsMultiResource = false;
     } else if (type === WorkType.WORKSHOP) {
       nextMode = ServiceMode.ONSITE;
       nextIsMultiCustomer = true;
-      nextIsMultiResource = false;
     } else if (type === WorkType.VIRTUAL) {
-      nextMode = ServiceMode.PHONE;
-      nextIsMultiResource = false;
+      nextMode = ServiceMode.ONSITE;
     } else if (type === WorkType.TRIAL) {
       nextMode = ServiceMode.ONSITE;
       nextIsMultiResource = true;
     } else if (type === WorkType.GENERAL) {
       nextMode = ServiceMode.ONSITE;
-      nextIsMultiResource = false;
     } else if (type === WorkType.BREAK_FIX) {
       nextMode = ServiceMode.IN_FIELD;
-      nextIsMultiResource = false;
     } else if (type === WorkType.BLOOD_TEST) {
       nextMode = ServiceMode.ONSITE;
-      nextIsMultiResource = false;
+    } else if (type === WorkType.INSPECTION) {
+      nextMode = ServiceMode.IN_FIELD;
+    } else if (type === WorkType.MORTGAGE_ADVICE) {
+      nextMode = ServiceMode.VIDEO;
     }
 
     updateState({ 
@@ -174,10 +177,12 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
   const isModeDisabled = (mode: ServiceMode) => {
     if (state.workType === WorkType.INSTALLATION) return mode !== ServiceMode.IN_FIELD;
     if (state.workType === WorkType.WORKSHOP) return mode !== ServiceMode.ONSITE;
-    if (state.workType === WorkType.VIRTUAL) return mode !== ServiceMode.PHONE && mode !== ServiceMode.VIDEO;
+    if (state.workType === WorkType.VIRTUAL) return mode === ServiceMode.IN_FIELD;
     if (state.workType === WorkType.TRIAL) return mode !== ServiceMode.ONSITE;
     if (state.workType === WorkType.BREAK_FIX) return mode !== ServiceMode.IN_FIELD;
     if (state.workType === WorkType.BLOOD_TEST) return mode !== ServiceMode.ONSITE;
+    if (state.workType === WorkType.INSPECTION) return mode !== ServiceMode.IN_FIELD;
+    if (state.workType === WorkType.MORTGAGE_ADVICE) return mode !== ServiceMode.VIDEO;
     return false;
   };
 
@@ -186,7 +191,10 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
     c.email.toLowerCase().includes(customerSearch.toLowerCase())
   );
 
-  const filteredWorkTypes = ALL_WORK_TYPES.filter(t => 
+  const filteredRecent = RECENTLY_SCHEDULED_TYPES.filter(t =>
+    t.toLowerCase().includes(workSearch.toLowerCase())
+  );
+  const filteredAll = ALL_WORK_TYPES.filter(t =>
     t.toLowerCase().includes(workSearch.toLowerCase())
   );
 
@@ -398,16 +406,41 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
             
             {isWorkOpen && (
               <div className="absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-top-2">
-                <div className="max-h-52 overflow-y-auto custom-scrollbar py-1 px-1">
-                  {filteredWorkTypes.length > 0 ? (
-                    filteredWorkTypes.map((type) => (
-                      <button key={type} onClick={() => handleSelectWorkType(type as WorkType)} className={`w-full text-left px-3.5 py-2.5 rounded-lg text-[12px] font-bold flex items-center justify-between transition-all ${state.workType === type ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
-                        <span>{type}</span>
-                        {state.workType === type && <Check size={14} className="text-blue-600" />}
-                      </button>
-                    ))
-                  ) : (
+                <div className="max-h-64 overflow-y-auto custom-scrollbar py-1.5 px-1">
+                  {filteredRecent.length === 0 && filteredAll.length === 0 ? (
                     <div className="px-3 py-6 text-center"><p className="text-[12px] text-gray-400 italic">No matching work types found</p></div>
+                  ) : (
+                    <>
+                      {filteredRecent.length > 0 && (
+                        <>
+                          <div className="px-3 pt-1 pb-1">
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Recently Scheduled</span>
+                          </div>
+                          {filteredRecent.map((type) => (
+                            <button key={type} onClick={() => handleSelectWorkType(type as WorkType)} className={`w-full text-left px-3.5 py-2.5 rounded-lg text-[12px] font-bold flex items-center justify-between transition-all ${state.workType === type ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                              <span>{type}</span>
+                              {state.workType === type && <Check size={14} className="text-blue-600" />}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                      {filteredRecent.length > 0 && filteredAll.length > 0 && (
+                        <div className="mx-2 my-1.5 border-t border-gray-100" />
+                      )}
+                      {filteredAll.length > 0 && (
+                        <>
+                          <div className="px-3 pt-1 pb-1">
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">All Work Types</span>
+                          </div>
+                          {filteredAll.map((type) => (
+                            <button key={type} onClick={() => handleSelectWorkType(type as WorkType)} className={`w-full text-left px-3.5 py-2.5 rounded-lg text-[12px] font-bold flex items-center justify-between transition-all ${state.workType === type ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                              <span>{type}</span>
+                              {state.workType === type && <Check size={14} className="text-blue-600" />}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

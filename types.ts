@@ -8,12 +8,14 @@ export enum ServiceMode {
 
 export enum WorkType {
   INSTALLATION = 'Installation',
-  WORKSHOP = 'Workshop with participants',
-  VIRTUAL = 'Virtual Consultation',
+  WORKSHOP = 'Workshop - Group Appt',
+  VIRTUAL = 'Consultation',
   TRIAL = 'Trial',
   GENERAL = 'General',
   BREAK_FIX = 'Break Fix (Arrival Windows Example)',
-  BLOOD_TEST = 'Blood Test (BTB, BTA)'
+  BLOOD_TEST = 'Blood Test (BTB, BTA)',
+  INSPECTION = 'Inspection',
+  MORTGAGE_ADVICE = 'Mortgage Advice'
 }
 
 export interface Customer {
