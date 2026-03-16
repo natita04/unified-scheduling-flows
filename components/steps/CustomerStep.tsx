@@ -397,15 +397,12 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                 onChange={(e) => setWorkSearch(e.target.value)}
               />
               <div className="absolute right-2 flex items-center gap-0.5">
-                {state.workType && !workSearch && (
-                  <button onClick={(e) => { e.stopPropagation(); updateState({ workType: null, serviceMode: null, isMultiCustomer: false }); }} className="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors"><X size={14} /></button>
-                )}
                 <button type="button" onClick={(e) => { e.stopPropagation(); setIsWorkOpen(!isWorkOpen); }} className="p-1 text-gray-400 hover:text-gray-600"><ChevronDown size={16} className={`transition-transform duration-200 ${isWorkOpen ? 'rotate-180' : ''}`} /></button>
               </div>
             </div>
-            
+
             {isWorkOpen && (
-              <div className="absolute z-50 w-full bottom-full mb-2 bg-white border border-gray-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+              <div className="absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-top-2">
                 <div className="max-h-64 overflow-y-auto custom-scrollbar py-1.5 px-1">
                   {filteredRecent.length === 0 && filteredAll.length === 0 ? (
                     <div className="px-3 py-6 text-center"><p className="text-[12px] text-gray-400 italic">No matching work types found</p></div>
