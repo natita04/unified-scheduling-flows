@@ -498,7 +498,7 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
                 >
                   <div className="flex items-center gap-3">
                     <CalendarIcon size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
-                    <span>{time} {isBreakFix && `- ${getEndTime(time)}`}</span>
+                    <span>{time} {(isBreakFix || isBloodTest) && `- ${getEndTime(time)}`}</span>
                   </div>
                   <div className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                     isSelected 
