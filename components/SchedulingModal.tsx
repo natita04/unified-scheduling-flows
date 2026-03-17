@@ -7,7 +7,6 @@ import { CustomerStep } from './steps/CustomerStep';
 import { LocationStep } from './steps/LocationStep';
 import { SchedulingStep } from './steps/SchedulingStep';
 import { ReviewStep } from './steps/ReviewStep';
-import { RequirementsStep } from './steps/RequirementsStep';
 
 interface SchedulingModalProps {
   isOpen: boolean;
@@ -54,12 +53,6 @@ export const SchedulingModal: React.FC<SchedulingModalProps> = ({ isOpen, onClos
         nextStep = Step.SCHEDULING;
       }
     } else if (currentStep === Step.SCHEDULING) {
-      if (state.isMultiCustomer) {
-        nextStep = Step.REQUIREMENTS;
-      } else {
-        nextStep = Step.FINALIZATION;
-      }
-    } else if (currentStep === Step.REQUIREMENTS) {
       nextStep = Step.FINALIZATION;
     }
 
@@ -78,14 +71,8 @@ export const SchedulingModal: React.FC<SchedulingModalProps> = ({ isOpen, onClos
       } else {
         prevStep = Step.CUSTOMER_AND_WORK;
       }
-    } else if (currentStep === Step.REQUIREMENTS) {
-      prevStep = Step.SCHEDULING;
     } else if (currentStep === Step.FINALIZATION) {
-      if (state.isMultiCustomer) {
-        prevStep = Step.REQUIREMENTS;
-      } else {
-        prevStep = Step.SCHEDULING;
-      }
+      prevStep = Step.SCHEDULING;
     }
 
     if (prevStep >= Step.CUSTOMER_AND_WORK) {
@@ -142,8 +129,6 @@ export const SchedulingModal: React.FC<SchedulingModalProps> = ({ isOpen, onClos
         return <LocationStep state={state} updateState={updateState} />;
       case Step.SCHEDULING:
         return <SchedulingStep state={state} updateState={updateState} />;
-      case Step.REQUIREMENTS:
-        return <RequirementsStep state={state} updateState={updateState} />;
       case Step.FINALIZATION:
         return <ReviewStep state={state} updateState={updateState} />;
       default:
