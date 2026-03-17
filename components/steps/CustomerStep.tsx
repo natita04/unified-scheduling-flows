@@ -470,6 +470,32 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
             </div>
           </div>
         )}
+
+        {(state.isMultiCustomer || state.isMultiResource) && (
+          <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">GROUP APPOINTMENT</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={state.minParticipantsEnabled} onChange={(e) => updateState({ minParticipantsEnabled: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-[13px] font-bold text-gray-700 group-hover:text-gray-900 transition-colors">Min attendees</span>
+                </label>
+                {state.minParticipantsEnabled && (
+                  <input type="number" min="1" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-bold text-center focus:border-blue-500 focus:bg-white outline-none transition-all animate-in slide-in-from-top-1" value={state.minParticipants || 1} onChange={(e) => updateState({ minParticipants: parseInt(e.target.value) || 1 })} />
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" checked={state.maxParticipantsEnabled} onChange={(e) => updateState({ maxParticipantsEnabled: e.target.checked })} className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                  <span className="text-[13px] font-bold text-gray-700 group-hover:text-gray-900 transition-colors">Max attendees</span>
+                </label>
+                {state.maxParticipantsEnabled && (
+                  <input type="number" min="1" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-bold text-center focus:border-blue-500 focus:bg-white outline-none transition-all animate-in slide-in-from-top-1" value={state.maxParticipants || 10} onChange={(e) => updateState({ maxParticipants: parseInt(e.target.value) || 10 })} />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
