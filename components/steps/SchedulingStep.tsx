@@ -343,14 +343,14 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
 
   const UnifiedSearchBox = () => (
     <div
-      className={`relative flex items-stretch bg-white border-2 rounded-xl h-11 overflow-hidden transition-all shadow-sm ${isDropdownOpen ? 'border-[#001639] ring-1 ring-[#001639]' : 'border-gray-200 hover:border-gray-300'}`}
+      className={`relative flex items-stretch bg-white border-2 rounded-xl h-11 transition-all shadow-sm ${isDropdownOpen ? 'border-[#001639] ring-1 ring-[#001639]' : 'border-gray-200 hover:border-gray-300'}`}
       onClick={() => inputRef.current?.focus()}
     >
       {/* Type picker dropdown (left side) */}
       <div className="relative shrink-0 self-stretch" ref={typeDropdownRef} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={() => setIsTypeOpen(prev => !prev)}
-          className="flex items-center gap-2 px-3 h-full border-r border-gray-100 bg-gray-50/30 hover:bg-gray-100/60 transition-colors"
+          className="flex items-center gap-2 px-3 h-full border-r border-gray-100 bg-gray-50/30 hover:bg-gray-100/60 transition-colors rounded-l-[10px]"
         >
           <div className="w-5 h-5 bg-[#0176d3] rounded-full flex items-center justify-center text-white shrink-0">
             {resourceTypeFilter === ResourceType.PERSON ? <User size={11} strokeWidth={3} /> : <Package size={11} strokeWidth={3} />}
