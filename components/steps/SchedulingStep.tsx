@@ -496,23 +496,23 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
             
             return (
               <div key={time} className="space-y-3">
-                <button
-                  onClick={() => updateState({ 
-                    date: date || state.date || formatDate(new Date(2025, 3, 18)),
-                    timeSlot: `${time} - ${getEndTime(time)}` 
-                  })}
-                  className={`w-full px-4 py-3 rounded-xl text-[13px] font-bold transition-all border-2 flex items-center justify-between ${
-                    isSelected 
-                    ? 'bg-[#0176d3] border-[#0176d3] text-white shadow-md' 
-                    : 'bg-white border-gray-100 text-gray-700 hover:border-blue-200 hover:bg-blue-50/30'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <CalendarIcon size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
-                    <span>{time} {(isBreakFix || isBloodTest) && `- ${getEndTime(time)}`}</span>
-                  </div>
-                  <span className="relative group/score">
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md cursor-default ${
+                <div className="relative group/score">
+                  <button
+                    onClick={() => updateState({
+                      date: date || state.date || formatDate(new Date(2025, 3, 18)),
+                      timeSlot: `${time} - ${getEndTime(time)}`
+                    })}
+                    className={`w-full px-4 py-3 rounded-xl text-[13px] font-bold transition-all border-2 flex items-center justify-between ${
+                      isSelected
+                      ? 'bg-[#0176d3] border-[#0176d3] text-white shadow-md'
+                      : 'bg-white border-gray-100 text-gray-700 hover:border-blue-200 hover:bg-blue-50/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <CalendarIcon size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
+                      <span>{time} {(isBreakFix || isBloodTest) && `- ${getEndTime(time)}`}</span>
+                    </div>
+                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                       isSelected
                         ? 'bg-white/20 text-white'
                         : isGolden
@@ -521,13 +521,13 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
                     }`}>
                       {score}/100
                     </span>
-                    {/* Score popover */}
-                    <span className="pointer-events-none absolute bottom-full right-0 mb-2 w-60 px-3 py-2.5 bg-[#001639] text-white text-[11px] font-medium rounded-xl opacity-0 invisible group-hover/score:opacity-100 group-hover/score:visible transition-all duration-150 shadow-xl z-[200] text-left leading-relaxed whitespace-normal block">
-                      {getScoreExplanation(score)}
-                      <span className="absolute top-full right-3 -mt-[1px] border-[6px] border-transparent border-t-[#001639] block" />
-                    </span>
-                  </span>
-                </button>
+                  </button>
+                  {/* Score popover — outside the button so it isn't clipped */}
+                  <div className="pointer-events-none absolute bottom-full right-0 mb-2 w-64 px-3 py-2.5 bg-[#032D60] text-white text-[11px] font-medium rounded-xl opacity-0 invisible group-hover/score:opacity-100 group-hover/score:visible transition-all duration-150 shadow-xl z-[200] text-left leading-relaxed">
+                    {getScoreExplanation(score)}
+                    <span className="absolute top-full right-4 -mt-[1px] border-[6px] border-transparent border-t-[#032D60] block" />
+                  </div>
+                </div>
 
                 {isSelected && showRecurring && (
                 <div className="px-1 pb-2 animate-in slide-in-from-top-2 duration-300">
