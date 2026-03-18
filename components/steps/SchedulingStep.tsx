@@ -367,8 +367,13 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
       {isDropdownOpen && (
         <div className="absolute z-[100] top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
           <div className="max-h-60 overflow-y-auto custom-scrollbar py-1.5 px-1">
-            {filteredResources.length > 0 ? (
-              filteredResources.map(res => {
+            {filteredResources.length > 0 ? (() => {
+              const isSearching = searchTerm.trim().length > 0;
+              const isPeople = resourceTypeFilter === ResourceType.PERSON;
+              const preferred = isPeople && !isSearching ? filteredResources.slice(0, 3) : filteredResources;
+              const rest = isPeople && !isSearching ? filteredResources.slice(3) : [];
+
+              const renderRow = (res: Resource) => {
                 const isSelected = state.resources.some(r => r.id === res.id);
                 return (
                   <button
@@ -386,8 +391,28 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
                     {isSelected && <Check size={14} className="text-blue-600" />}
                   </button>
                 );
-              })
-            ) : (
+              };
+
+              return (
+                <>
+                  {isPeople && !isSearching && (
+                    <div className="px-2 pt-1 pb-0.5">
+                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Preferred Resources</span>
+                    </div>
+                  )}
+                  {preferred.map(renderRow)}
+                  {rest.length > 0 && (
+                    <>
+                      <div className="mx-1 my-1.5 border-t border-gray-100" />
+                      <div className="px-2 pb-0.5">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">All Resources</span>
+                      </div>
+                      {rest.map(renderRow)}
+                    </>
+                  )}
+                </>
+              );
+            })() : (
               <div className="px-3 py-3 text-center text-[12px] text-gray-400 italic">No matches found</div>
             )}
           </div>
