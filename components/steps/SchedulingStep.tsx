@@ -576,7 +576,7 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
 };
 
   const InfoBubble = () => {
-    if (!(state.schedulingTab === 'SLOTS' || state.resources.length > 0)) return null;
+    if (state.schedulingTab !== 'SLOTS' && state.resources.length <= 1 && !state.isRecurring) return null;
     
     return (
       <div className="bg-[#f0f9ff]/95 border border-[#dbeafe] p-4 rounded-xl flex items-start gap-3 mt-4 animate-in fade-in slide-in-from-top-2 duration-500">
