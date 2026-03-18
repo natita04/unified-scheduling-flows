@@ -422,7 +422,9 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
   );
 
   const SelectedResourcesList = () => (
-    <div className="space-y-1 mt-2">
+    <div
+      className={`space-y-1 mt-2 ${state.resources.length > 4 ? 'max-h-[272px] overflow-y-auto custom-scrollbar pr-1' : ''}`}
+    >
       {state.resources.map((res, index) => {
         const isPrimary = index === 0;
         const isOptional = state.optionalResourceIds?.includes(res.id);
