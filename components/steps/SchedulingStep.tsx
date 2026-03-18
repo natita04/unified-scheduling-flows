@@ -586,7 +586,7 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
             <p className="text-[11px] font-medium text-[#0070d2] leading-tight">
               Service resource will be assigned based on availability for the preferred slot
             </p>
-          ) : (
+          ) : state.resources.length > 1 && (
             <p className="text-[11px] font-medium text-[#0070d2] leading-tight">
               Common slots available for all selected resources and assets
             </p>
