@@ -221,7 +221,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
           
           <div 
             className={`flex items-stretch bg-white border-2 rounded-xl h-11 overflow-hidden transition-all shadow-sm ${
-              isCustomerOpen ? 'border-[#001639] ring-1 ring-[#001639]' : 'border-gray-200 hover:border-gray-300'
+              isCustomerOpen ? 'border-blue-400' : 'border-gray-200 hover:border-gray-300'
             }`}
           >
             {/* Split Lookup - Left Part: Type Selector */}
@@ -383,7 +383,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
           
           <div className="space-y-3.5 relative">
             <div 
-              className={`relative flex items-center bg-white border-2 rounded-xl transition-all shadow-sm ${isWorkOpen ? 'border-[#001639] ring-1 ring-[#001639]' : 'border-gray-200 hover:border-gray-300'}`}
+              className={`relative flex items-center bg-white border-2 rounded-xl transition-all shadow-sm ${isWorkOpen ? 'border-blue-400' : 'border-gray-200 hover:border-gray-300'}`}
               onClick={() => workInputRef.current?.focus()}
             >
               <div className="pl-3 text-gray-400 shrink-0"><Search size={16} /></div>
