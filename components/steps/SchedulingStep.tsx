@@ -343,7 +343,7 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
 
   const UnifiedSearchBox = () => (
     <div
-      className={`relative flex items-stretch bg-white border-2 rounded-xl h-11 transition-all shadow-sm ${isDropdownOpen ? 'border-[#001639] ring-1 ring-[#001639]' : 'border-gray-200 hover:border-gray-300'}`}
+      className={`relative flex items-stretch bg-white border-2 rounded-xl h-11 transition-all shadow-sm ${isDropdownOpen ? 'border-blue-400' : 'border-gray-200 hover:border-gray-300'}`}
       onClick={() => inputRef.current?.focus()}
     >
       {/* Type picker dropdown (left side) */}
