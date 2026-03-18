@@ -15,8 +15,7 @@ import {
   MessageSquare,
   User,
   Calendar as CalendarIcon,
-  Package,
-  UserCircle
+  Package
 } from 'lucide-react';
 import { SchedulingState, Resource, RecurrenceConfig, WorkType, ServiceMode, ResourceType } from '../../types';
 import { MOCK_RESOURCES, TIME_SLOTS } from '../../constants';
@@ -61,6 +60,8 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
   const [resourceTypeFilter, setResourceTypeFilter] = useState<ResourceType>(ResourceType.PERSON);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isTypeOpen, setIsTypeOpen] = useState(false);
+  const typeDropdownRef = useRef<HTMLDivElement>(null);
   const [scoreTooltip, setScoreTooltip] = useState<{ text: string; top: number; right: number } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,6 +98,9 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (typeDropdownRef.current && !typeDropdownRef.current.contains(event.target as Node)) {
+        setIsTypeOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -338,20 +342,50 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
   };
 
   const UnifiedSearchBox = () => (
-    <div 
-      className={`relative flex items-center gap-2 p-1.5 border-2 border-gray-200 rounded-xl bg-white shadow-sm focus-within:border-blue-500 transition-all cursor-text min-h-[48px]`}
+    <div
+      className={`relative flex items-stretch bg-white border-2 rounded-xl h-11 overflow-hidden transition-all shadow-sm ${isDropdownOpen ? 'border-[#001639] ring-1 ring-[#001639]' : 'border-gray-200 hover:border-gray-300'}`}
       onClick={() => inputRef.current?.focus()}
     >
-      <div className={`p-1 rounded-lg text-white shrink-0 bg-[#0070d2]`}>
-        {resourceTypeFilter === ResourceType.PERSON ? <User size={16} /> : <Package size={16} />}
+      {/* Type picker dropdown (left side) */}
+      <div className="relative shrink-0 self-stretch" ref={typeDropdownRef} onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={() => setIsTypeOpen(prev => !prev)}
+          className="flex items-center gap-2 px-3 h-full border-r border-gray-100 bg-gray-50/30 hover:bg-gray-100/60 transition-colors"
+        >
+          <div className="w-5 h-5 bg-[#0176d3] rounded-full flex items-center justify-center text-white shrink-0">
+            {resourceTypeFilter === ResourceType.PERSON ? <User size={11} strokeWidth={3} /> : <Package size={11} strokeWidth={3} />}
+          </div>
+          <span className="text-[13px] font-bold text-gray-700">{resourceTypeFilter === ResourceType.PERSON ? 'People' : 'Assets'}</span>
+          <ChevronDown size={14} className={`text-gray-400 ml-0.5 transition-transform ${isTypeOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {isTypeOpen && (
+          <div className="absolute z-[200] top-full left-0 mt-1.5 w-36 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
+            {[
+              { type: ResourceType.PERSON, icon: <User size={13} />, label: 'People' },
+              { type: ResourceType.ASSET, icon: <Package size={13} />, label: 'Assets' },
+            ].map(({ type, icon, label }) => (
+              <button
+                key={type}
+                onClick={() => { setResourceTypeFilter(type); setIsTypeOpen(false); setSearchTerm(''); }}
+                className={`w-full flex items-center gap-2 px-3 py-2.5 text-[12px] font-bold transition-colors ${
+                  resourceTypeFilter === type ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {icon}
+                {label}
+                {resourceTypeFilter === type && <Check size={12} className="ml-auto text-blue-600" />}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      
-      <div className="flex flex-1 min-w-0">
-        <input 
+
+      <div className="flex flex-1 items-center min-w-0 px-3">
+        <input
           ref={inputRef}
-          type="text" 
+          type="text"
           placeholder={`Search ${resourceTypeFilter === ResourceType.PERSON ? 'people' : 'assets'}...`}
-          className="flex-1 min-w-[100px] bg-transparent outline-none text-[13px] py-1"
+          className="flex-1 min-w-[100px] bg-transparent outline-none text-[13px]"
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -361,7 +395,7 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
         />
       </div>
 
-      <Search className="text-gray-400 mx-1 shrink-0" size={16} />
+      <Search className="text-gray-400 mr-3 shrink-0 self-center" size={16} />
 
       {/* Dropdown Results */}
       {isDropdownOpen && (
@@ -717,28 +751,6 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
           <div className="animate-in slide-in-from-right-2 pb-16 h-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch h-full">
               <div className="space-y-5 sticky top-0">
-                {/* Resource Type Filter */}
-                <div className="flex p-1 bg-gray-100 rounded-xl">
-                  <button 
-                    onClick={() => setResourceTypeFilter(ResourceType.PERSON)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[12px] font-bold transition-all ${
-                      resourceTypeFilter === ResourceType.PERSON ? 'bg-white text-[#0176d3] shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    <UserCircle size={14} />
-                    People
-                  </button>
-                  <button 
-                    onClick={() => setResourceTypeFilter(ResourceType.ASSET)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[12px] font-bold transition-all ${
-                      resourceTypeFilter === ResourceType.ASSET ? 'bg-white text-[#0176d3] shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    <Package size={14} />
-                    Assets
-                  </button>
-                </div>
-
                 {/* Unified Search Box - Always shown */}
                 <div className="px-1" ref={dropdownRef}>
                   <UnifiedSearchBox />
