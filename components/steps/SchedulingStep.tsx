@@ -36,6 +36,17 @@ const DEFAULT_RECURRENCE: RecurrenceConfig = {
 
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+const getScoreExplanation = (score: number): string => {
+  if (score >= 97) return "Aligns best with your objectives — preferred resource is available, travel is minimized, and skill match is excellent.";
+  if (score >= 94) return "Near-perfect fit. Preferred resource is free and highly skilled. Travel distance is within the optimal range.";
+  if (score >= 91) return "Strong alignment. Preferred resource is available with an excellent skill match. Travel is slightly above minimum.";
+  if (score >= 88) return "Very good option. Resource skills meet your requirements and availability is confirmed. Minor travel overhead.";
+  if (score >= 75) return "Good fit overall. A well-matched resource is available, though not your preferred one. Travel is reasonable.";
+  if (score >= 65) return "Moderate alignment. A capable resource is available but travel distance is higher than preferred slots.";
+  if (score >= 60) return "Adequate option. Preferred resource is unavailable at this time and travel overhead is above average.";
+  return "Lower alignment due to resource constraints and non-optimal travel distance at this time slot.";
+};
+
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
     weekday: 'short',
@@ -500,15 +511,22 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
                     <CalendarIcon size={14} className={isSelected ? 'text-white' : 'text-gray-400'} />
                     <span>{time} {(isBreakFix || isBloodTest) && `- ${getEndTime(time)}`}</span>
                   </div>
-                  <div className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
-                    isSelected 
-                      ? 'bg-white/20 text-white' 
-                      : isGolden 
-                        ? 'bg-green-50 text-green-600' 
-                        : 'bg-orange-50 text-orange-600'
-                  }`}>
-                    {score}%
-                  </div>
+                  <span className="relative group/score">
+                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md cursor-default ${
+                      isSelected
+                        ? 'bg-white/20 text-white'
+                        : isGolden
+                          ? 'bg-green-50 text-green-600'
+                          : 'bg-orange-50 text-orange-600'
+                    }`}>
+                      {score}/100
+                    </span>
+                    {/* Score popover */}
+                    <span className="pointer-events-none absolute bottom-full right-0 mb-2 w-60 px-3 py-2.5 bg-[#001639] text-white text-[11px] font-medium rounded-xl opacity-0 invisible group-hover/score:opacity-100 group-hover/score:visible transition-all duration-150 shadow-xl z-[200] text-left leading-relaxed whitespace-normal block">
+                      {getScoreExplanation(score)}
+                      <span className="absolute top-full right-3 -mt-[1px] border-[6px] border-transparent border-t-[#001639] block" />
+                    </span>
+                  </span>
                 </button>
 
                 {isSelected && showRecurring && (
