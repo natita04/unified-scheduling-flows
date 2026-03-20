@@ -36,6 +36,7 @@ const INITIAL_STATE: SchedulingState = {
   maxParticipantsEnabled: false,
   isMultiResource: false,
   additionalEmails: [],
+  territory: 'San Francisco',
 };
 
 export const SchedulingModal: React.FC<SchedulingModalProps> = ({ isOpen, onClose, onFinish }) => {

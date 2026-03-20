@@ -71,6 +71,7 @@ export interface SchedulingState {
   optionalResourceIds?: string[];
   additionalEmails?: string[];
   allowExternalGuests?: boolean;
+  territory?: string;
 }
 
 export enum Step {
