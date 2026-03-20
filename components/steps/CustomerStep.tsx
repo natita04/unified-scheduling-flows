@@ -482,15 +482,15 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
 
             {state.serviceMode === ServiceMode.IN_FIELD && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">SERVICE ADDRESS</label>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">CUSTOMER ADDRESS</label>
                 <div className="relative">
                   <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
                   <input
                     type="text"
                     value={state.location}
                     onChange={(e) => updateState({ location: e.target.value })}
-                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 focus:bg-white outline-none transition-all"
-                    placeholder="Enter service address"
+                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 outline-none transition-all"
+                    placeholder="Enter customer address"
                   />
                 </div>
               </div>
