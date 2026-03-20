@@ -383,6 +383,34 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
         </div>
       </div>
 
+      {/* SERVICE TERRITORY */}
+      <div className="space-y-2" ref={terrRef}>
+        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">Service Territory</label>
+        <div className="relative">
+          <button
+            onClick={() => setIsTerrOpen(prev => !prev)}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 hover:border-gray-300 focus:border-blue-400 outline-none transition-all shadow-sm"
+          >
+            <span>{state.territory || 'San Francisco'}</span>
+            <ChevronDown size={14} className={`text-gray-400 transition-transform ${isTerrOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {isTerrOpen && (
+            <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
+              {TERRITORIES.map(t => (
+                <button
+                  key={t}
+                  onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }}
+                  className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
+                >
+                  {t}
+                  {state.territory === t && <Check size={13} className="text-blue-600" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* SECTION 2: WORK TYPE & METHOD */}
       <div className="space-y-5">
         <div ref={workRef}>
@@ -488,48 +516,17 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
             </div>
 
             {state.serviceMode === ServiceMode.IN_FIELD && (
-              <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                {/* SERVICE TERRITORY */}
-                <div className="space-y-2" ref={terrRef}>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">Service Territory</label>
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsTerrOpen(prev => !prev)}
-                      className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 hover:border-gray-300 focus:border-blue-400 outline-none transition-all"
-                    >
-                      <span>{state.territory || 'San Francisco'}</span>
-                      <ChevronDown size={14} className={`text-gray-400 transition-transform ${isTerrOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {isTerrOpen && (
-                      <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
-                        {TERRITORIES.map(t => (
-                          <button
-                            key={t}
-                            onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }}
-                            className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
-                          >
-                            {t}
-                            {state.territory === t && <Check size={13} className="text-blue-600" />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* CUSTOMER ADDRESS */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">Customer Address</label>
-                  <div className="relative">
-                    <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
-                    <input
-                      type="text"
-                      value={state.location}
-                      onChange={(e) => updateState({ location: e.target.value })}
-                      className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 outline-none transition-all"
-                      placeholder="Enter customer address"
-                    />
-                  </div>
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">Customer Address</label>
+                <div className="relative">
+                  <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
+                  <input
+                    type="text"
+                    value={state.location}
+                    onChange={(e) => updateState({ location: e.target.value })}
+                    className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 outline-none transition-all shadow-sm"
+                    placeholder="Enter customer address"
+                  />
                 </div>
               </div>
             )}
