@@ -164,11 +164,13 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
       nextMode = ServiceMode.VIDEO;
     }
 
-    updateState({ 
-      workType: type, 
-      serviceMode: nextMode, 
+    const isInField = nextMode === ServiceMode.IN_FIELD;
+    updateState({
+      workType: type,
+      serviceMode: nextMode,
       isMultiResource: nextIsMultiResource,
-      isMultiCustomer: nextIsMultiCustomer
+      isMultiCustomer: nextIsMultiCustomer,
+      location: isInField ? (state.customers[0]?.address || '30 Market Street, San Francisco, CA') : '',
     });
     setWorkSearch('');
     setIsWorkOpen(false);
@@ -455,7 +457,16 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                   <button
                     key={opt.mode}
                     disabled={disabled}
-                    onClick={() => !disabled && updateState({ serviceMode: opt.mode })}
+                    onClick={() => {
+                      if (disabled) return;
+                      const inField = opt.mode === ServiceMode.IN_FIELD;
+                      updateState({
+                        serviceMode: opt.mode,
+                        location: inField
+                          ? (state.customers[0]?.address || '30 Market Street, San Francisco, CA')
+                          : (state.serviceMode === ServiceMode.IN_FIELD ? '' : state.location),
+                      });
+                    }}
                     className={`flex flex-col items-center text-center p-3.5 rounded-xl border-2 transition-all gap-1.5 relative ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
                   >
                     <div className={`p-1.5 rounded-lg transition-colors ${disabled ? 'bg-gray-200 text-gray-400' : state.serviceMode === opt.mode ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}><opt.icon size={18} /></div>
@@ -468,6 +479,22 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                 );
               })}
             </div>
+
+            {state.serviceMode === ServiceMode.IN_FIELD && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">SERVICE ADDRESS</label>
+                <div className="relative">
+                  <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
+                  <input
+                    type="text"
+                    value={state.location}
+                    onChange={(e) => updateState({ location: e.target.value })}
+                    className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 focus:bg-white outline-none transition-all"
+                    placeholder="Enter service address"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
