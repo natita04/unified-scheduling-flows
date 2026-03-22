@@ -515,7 +515,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                             : (state.serviceMode === ServiceMode.IN_FIELD ? '' : state.location),
                         });
                       }}
-                      className={`flex flex-col items-center justify-center text-center py-8 px-3 rounded-xl border-2 transition-all gap-2 relative w-full h-full ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
+                      className={`flex flex-col items-center justify-center text-center px-3 rounded-xl border-2 transition-all gap-2 relative w-full h-full ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
                     >
                       <div className={`p-2 rounded-lg transition-colors ${disabled ? 'bg-gray-200 text-gray-400' : state.serviceMode === opt.mode ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}><opt.icon size={20} /></div>
                       <div className="min-w-0">
