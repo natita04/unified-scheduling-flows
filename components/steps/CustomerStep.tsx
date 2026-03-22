@@ -496,9 +496,9 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
 
           {/* RIGHT COLUMN: Work Channel */}
           {state.workType && (
-            <div className="flex flex-col animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="flex flex-col h-full animate-in fade-in slide-in-from-top-4 duration-500">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT WORK CHANNEL</label>
-              <div className="flex gap-3 flex-1">
+              <div className="flex gap-3 flex-1 min-h-0">
                 {SERVICE_MODES.map((opt) => {
                   const disabled = isModeDisabled(opt.mode);
                   return (
