@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
+import { FEATURE_FLAGS } from '../../featureFlags';
 import { 
   Search, 
   ChevronLeft, 
@@ -91,6 +92,7 @@ export const SchedulingStep: React.FC<Props> = ({ state, updateState }) => {
   });
 
   const showRecurring =
+    FEATURE_FLAGS.FEATURE_MAKE_RECURRING &&
     state.serviceMode !== ServiceMode.IN_FIELD &&
     (state.schedulingTab === 'SLOTS' || state.resources.length === 1);
 

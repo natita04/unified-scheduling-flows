@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { FEATURE_FLAGS } from '../../featureFlags';
 import {
   Search,
   Check,
@@ -48,12 +49,16 @@ const ALL_WORK_TYPES = [
   WorkType.MORTGAGE_ADVICE,
 ];
 
-const SERVICE_MODES = [
+const ALL_SERVICE_MODES = [
   { mode: ServiceMode.ONSITE, icon: Building2, desc: 'At our branch' },
   { mode: ServiceMode.IN_FIELD, icon: MapPin, desc: 'At customer location' },
   { mode: ServiceMode.PHONE, icon: Phone, desc: 'Voice call' },
   { mode: ServiceMode.VIDEO, icon: Video, desc: 'Video session' },
 ];
+
+const SERVICE_MODES = FEATURE_FLAGS.FEATURE_PHONE_VIDEO_CHANNELS
+  ? ALL_SERVICE_MODES
+  : ALL_SERVICE_MODES.filter(m => m.mode !== ServiceMode.PHONE && m.mode !== ServiceMode.VIDEO);
 
 const TERRITORIES = ['San Francisco', 'Los Angeles', 'San Diego', 'San Mateo', 'Forest City', 'San Jose'];
 
@@ -218,8 +223,8 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
               SELECT CUSTOMER
             </label>
-            {selectedCustomer && (
-              <button 
+            {FEATURE_FLAGS.FEATURE_VIEW_LATEST_APPOINTMENTS && selectedCustomer && (
+              <button
                 onClick={() => setShowLatest(!showLatest)}
                 className="text-[10px] font-bold text-[#0176d3] uppercase tracking-widest hover:underline transition-all"
               >
