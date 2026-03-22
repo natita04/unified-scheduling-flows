@@ -388,14 +388,16 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
         </div>
       </div>
 
-      {/* SECTION 2: WORK TYPE & METHOD */}
+      {/* SECTION 2: WORK TYPE, TERRITORY & CHANNEL */}
       <div className="space-y-5">
-        <div className="grid grid-cols-2 gap-4">
-          {/* SELECT WORK TYPE */}
-          <div ref={workRef}>
-            <div className="flex items-center justify-between px-1 mb-1.5">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">SELECT WORK TYPE</label>
-            </div>
+        <div className="grid grid-cols-2 gap-6 items-start">
+
+          {/* LEFT COLUMN: Work Type + Service Territory */}
+          <div className="space-y-4">
+            <div ref={workRef}>
+              <div className="flex items-center justify-between px-1 mb-1.5">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">SELECT WORK TYPE</label>
+              </div>
           
           <div className="space-y-3.5 relative">
             <div 
@@ -458,72 +460,79 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                 </div>
               </div>
             )}
-          </div>
+            </div>
+            </div>
+
+            {/* SELECT SERVICE TERRITORY */}
+            <div ref={terrRef}>
+              <div className="px-1 mb-1.5">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">SELECT SERVICE TERRITORY</label>
+              </div>
+              <div className="relative">
+                <button
+                  onClick={() => setIsTerrOpen(prev => !prev)}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 hover:border-gray-300 outline-none transition-all shadow-sm"
+                >
+                  <span>{state.territory || 'San Francisco'}</span>
+                  <ChevronDown size={14} className={`text-gray-400 transition-transform ${isTerrOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isTerrOpen && (
+                  <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
+                    {TERRITORIES.map(t => (
+                      <button
+                        key={t}
+                        onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }}
+                        className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
+                      >
+                        {t}
+                        {state.territory === t && <Check size={13} className="text-blue-600" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* SELECT SERVICE TERRITORY */}
-          <div ref={terrRef}>
-            <div className="px-1 mb-1.5">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">SELECT SERVICE TERRITORY</label>
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => setIsTerrOpen(prev => !prev)}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 hover:border-gray-300 outline-none transition-all shadow-sm"
-              >
-                <span>{state.territory || 'San Francisco'}</span>
-                <ChevronDown size={14} className={`text-gray-400 transition-transform ${isTerrOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {isTerrOpen && (
-                <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
-                  {TERRITORIES.map(t => (
+          {/* RIGHT COLUMN: Work Channel */}
+          {state.workType && (
+            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT WORK CHANNEL</label>
+              <div className="grid grid-cols-2 gap-3">
+                {SERVICE_MODES.map((opt) => {
+                  const disabled = isModeDisabled(opt.mode);
+                  return (
                     <button
-                      key={t}
-                      onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }}
-                      className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
+                      key={opt.mode}
+                      disabled={disabled}
+                      onClick={() => {
+                        if (disabled) return;
+                        const inField = opt.mode === ServiceMode.IN_FIELD;
+                        updateState({
+                          serviceMode: opt.mode,
+                          location: inField
+                            ? (state.customers[0]?.address || '30 Market Street, San Francisco, CA')
+                            : (state.serviceMode === ServiceMode.IN_FIELD ? '' : state.location),
+                        });
+                      }}
+                      className={`flex flex-col items-center justify-center text-center py-8 px-3 rounded-xl border-2 transition-all gap-2 relative ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
                     >
-                      {t}
-                      {state.territory === t && <Check size={13} className="text-blue-600" />}
+                      <div className={`p-2 rounded-lg transition-colors ${disabled ? 'bg-gray-200 text-gray-400' : state.serviceMode === opt.mode ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}><opt.icon size={20} /></div>
+                      <div className="min-w-0">
+                        <p className={`text-[12px] font-bold ${disabled ? 'text-gray-400' : state.serviceMode === opt.mode ? 'text-blue-900' : 'text-gray-900'}`}>{opt.mode}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{opt.desc}</p>
+                      </div>
+                      {state.serviceMode === opt.mode && !disabled && <div className="absolute top-2 right-2"><Check size={12} className="text-blue-600" /></div>}
                     </button>
-                  ))}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {state.workType && (
-          <div className="space-y-3.5 animate-in fade-in slide-in-from-top-4 duration-500">
-            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">SELECT WORK CHANNEL</label>
-            <div className="grid grid-cols-4 gap-3">
-              {SERVICE_MODES.map((opt) => {
-                const disabled = isModeDisabled(opt.mode);
-                return (
-                  <button
-                    key={opt.mode}
-                    disabled={disabled}
-                    onClick={() => {
-                      if (disabled) return;
-                      const inField = opt.mode === ServiceMode.IN_FIELD;
-                      updateState({
-                        serviceMode: opt.mode,
-                        location: inField
-                          ? (state.customers[0]?.address || '30 Market Street, San Francisco, CA')
-                          : (state.serviceMode === ServiceMode.IN_FIELD ? '' : state.location),
-                      });
-                    }}
-                    className={`flex flex-col items-center text-center p-3.5 rounded-xl border-2 transition-all gap-1.5 relative ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
-                  >
-                    <div className={`p-1.5 rounded-lg transition-colors ${disabled ? 'bg-gray-200 text-gray-400' : state.serviceMode === opt.mode ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}><opt.icon size={18} /></div>
-                    <div className="min-w-0">
-                      <p className={`text-[11px] font-bold ${disabled ? 'text-gray-400' : state.serviceMode === opt.mode ? 'text-blue-900' : 'text-gray-900'}`}>{opt.mode}</p>
-                      <p className="text-[9px] text-gray-400 truncate mt-0.5">{opt.desc}</p>
-                    </div>
-                    {state.serviceMode === opt.mode && !disabled && <div className="absolute top-1.5 right-1.5"><Check size={12} className="text-blue-600" /></div>}
-                  </button>
-                );
-              })}
-            </div>
+          <div>
 
             {state.serviceMode === ServiceMode.IN_FIELD && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
