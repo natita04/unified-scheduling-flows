@@ -388,37 +388,33 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
         </div>
       </div>
 
-      {/* SECTION 2: WORK TYPE, TERRITORY & CHANNEL */}
+      {/* SECTION 2: WORK TYPE, TERRITORY, CHANNEL, ADDRESS */}
       <div className="space-y-5">
-        <div className="grid grid-cols-2 gap-6 items-start">
 
-          {/* LEFT COLUMN: Work Type + Service Territory */}
-          <div className="space-y-4">
-            <div ref={workRef}>
-              <div className="flex items-center justify-between px-1 mb-1.5">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">SELECT WORK TYPE</label>
-              </div>
-          
-          <div className="space-y-3.5 relative">
-            <div 
+        {/* ROW 1: Work Type (full width) */}
+        <div ref={workRef}>
+          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT WORK TYPE</label>
+          <div className="relative">
+            <div
               className={`relative flex items-center bg-white border-2 rounded-xl transition-all shadow-sm ${isWorkOpen ? 'border-blue-400' : 'border-gray-200 hover:border-gray-300'}`}
               onClick={() => workInputRef.current?.focus()}
             >
               <div className="pl-3 text-gray-400 shrink-0"><Search size={16} /></div>
-              <input 
+              <input
                 ref={workInputRef}
-                type="text" 
-                placeholder={state.workType ? "" : "All work types"}
+                type="text"
+                placeholder={state.workType ? '' : 'All work types'}
                 className="w-full pl-2 pr-9 py-2.5 bg-transparent text-[13px] font-semibold focus:outline-none outline-none"
                 value={workSearch || (isWorkOpen ? '' : (state.workType || ''))}
                 onFocus={() => setIsWorkOpen(true)}
                 onChange={(e) => setWorkSearch(e.target.value)}
               />
-              <div className="absolute right-2 flex items-center gap-0.5">
-                <button type="button" onClick={(e) => { e.stopPropagation(); setIsWorkOpen(!isWorkOpen); }} className="p-1 text-gray-400 hover:text-gray-600"><ChevronDown size={16} className={`transition-transform duration-200 ${isWorkOpen ? 'rotate-180' : ''}`} /></button>
+              <div className="absolute right-2">
+                <button type="button" onClick={(e) => { e.stopPropagation(); setIsWorkOpen(!isWorkOpen); }} className="p-1 text-gray-400 hover:text-gray-600">
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${isWorkOpen ? 'rotate-180' : ''}`} />
+                </button>
               </div>
             </div>
-
             {isWorkOpen && (
               <div className="absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-hidden animate-in fade-in slide-in-from-top-2">
                 <div className="max-h-64 overflow-y-auto custom-scrollbar py-1.5 px-1">
@@ -428,9 +424,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                     <>
                       {filteredRecent.length > 0 && (
                         <>
-                          <div className="px-3 pt-1 pb-1">
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Recently Scheduled</span>
-                          </div>
+                          <div className="px-3 pt-1 pb-1"><span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Recently Scheduled</span></div>
                           {filteredRecent.map((type) => (
                             <button key={type} onClick={() => handleSelectWorkType(type as WorkType)} className={`w-full text-left px-3.5 py-2.5 rounded-lg text-[12px] font-bold flex items-center justify-between transition-all ${state.workType === type ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                               <span>{type}</span>
@@ -439,14 +433,10 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                           ))}
                         </>
                       )}
-                      {filteredRecent.length > 0 && filteredAll.length > 0 && (
-                        <div className="mx-2 my-1.5 border-t border-gray-100" />
-                      )}
+                      {filteredRecent.length > 0 && filteredAll.length > 0 && <div className="mx-2 my-1.5 border-t border-gray-100" />}
                       {filteredAll.length > 0 && (
                         <>
-                          <div className="px-3 pt-1 pb-1">
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">All Work Types</span>
-                          </div>
+                          <div className="px-3 pt-1 pb-1"><span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">All Work Types</span></div>
                           {filteredAll.map((type) => (
                             <button key={type} onClick={() => handleSelectWorkType(type as WorkType)} className={`w-full text-left px-3.5 py-2.5 rounded-lg text-[12px] font-bold flex items-center justify-between transition-all ${state.workType === type ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                               <span>{type}</span>
@@ -460,14 +450,51 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                 </div>
               </div>
             )}
-            </div>
-            </div>
+          </div>
+        </div>
 
-            {/* SELECT SERVICE TERRITORY */}
+        {/* ROW 2: Work Channel (full width) */}
+        {state.workType && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT WORK CHANNEL</label>
+            <div className="grid grid-cols-2 gap-3">
+              {SERVICE_MODES.map((opt) => {
+                const disabled = isModeDisabled(opt.mode);
+                return (
+                  <button
+                    key={opt.mode}
+                    disabled={disabled}
+                    onClick={() => {
+                      if (disabled) return;
+                      const inField = opt.mode === ServiceMode.IN_FIELD;
+                      updateState({
+                        serviceMode: opt.mode,
+                        location: inField
+                          ? (state.customers[0]?.address || '30 Market Street, San Francisco, CA')
+                          : (state.serviceMode === ServiceMode.IN_FIELD ? '' : state.location),
+                      });
+                    }}
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 transition-all relative ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
+                  >
+                    <div className={`p-2 rounded-lg transition-colors shrink-0 ${disabled ? 'bg-gray-200 text-gray-400' : state.serviceMode === opt.mode ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}><opt.icon size={18} /></div>
+                    <div className="text-left">
+                      <p className={`text-[13px] font-bold ${disabled ? 'text-gray-400' : state.serviceMode === opt.mode ? 'text-blue-900' : 'text-gray-900'}`}>{opt.mode}</p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">{opt.desc}</p>
+                    </div>
+                    {state.serviceMode === opt.mode && !disabled && <div className="absolute top-2 right-2"><Check size={12} className="text-blue-600" /></div>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ROW 3: Service Territory | Customer Address */}
+        {state.workType && (
+          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            {/* Service Territory */}
             <div ref={terrRef}>
-              <div className="px-1 mb-1.5">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">SELECT SERVICE TERRITORY</label>
-              </div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT SERVICE TERRITORY</label>
               <div className="relative">
                 <button
                   onClick={() => setIsTerrOpen(prev => !prev)}
@@ -479,11 +506,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                 {isTerrOpen && (
                   <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
                     {TERRITORIES.map(t => (
-                      <button
-                        key={t}
-                        onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }}
-                        className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}
-                      >
+                      <button key={t} onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }} className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
                         {t}
                         {state.territory === t && <Check size={13} className="text-blue-600" />}
                       </button>
@@ -492,51 +515,11 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                 )}
               </div>
             </div>
-          </div>
 
-          {/* RIGHT COLUMN: Work Channel */}
-          {state.workType && (
-            <div className="flex flex-col h-full animate-in fade-in slide-in-from-top-4 duration-500">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT WORK CHANNEL</label>
-              <div className="flex gap-3 flex-1 min-h-0">
-                {SERVICE_MODES.map((opt) => {
-                  const disabled = isModeDisabled(opt.mode);
-                  return (
-                    <button
-                      key={opt.mode}
-                      disabled={disabled}
-                      onClick={() => {
-                        if (disabled) return;
-                        const inField = opt.mode === ServiceMode.IN_FIELD;
-                        updateState({
-                          serviceMode: opt.mode,
-                          location: inField
-                            ? (state.customers[0]?.address || '30 Market Street, San Francisco, CA')
-                            : (state.serviceMode === ServiceMode.IN_FIELD ? '' : state.location),
-                        });
-                      }}
-                      className={`flex flex-col items-center justify-center text-center px-3 rounded-xl border-2 transition-all gap-2 relative flex-1 h-full ${disabled ? 'border-gray-50 bg-gray-50 opacity-40 cursor-not-allowed' : state.serviceMode === opt.mode ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600/10' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}
-                    >
-                      <div className={`p-2 rounded-lg transition-colors ${disabled ? 'bg-gray-200 text-gray-400' : state.serviceMode === opt.mode ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'}`}><opt.icon size={20} /></div>
-                      <div className="min-w-0">
-                        <p className={`text-[12px] font-bold ${disabled ? 'text-gray-400' : state.serviceMode === opt.mode ? 'text-blue-900' : 'text-gray-900'}`}>{opt.mode}</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">{opt.desc}</p>
-                      </div>
-                      {state.serviceMode === opt.mode && !disabled && <div className="absolute top-2 right-2"><Check size={12} className="text-blue-600" /></div>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {state.workType && (
-          <div>
-
-            {state.serviceMode === ServiceMode.IN_FIELD && (
-              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1">Customer Address</label>
+            {/* Customer Address — only for In-Field */}
+            {state.serviceMode === ServiceMode.IN_FIELD ? (
+              <div className="animate-in fade-in duration-200">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">CUSTOMER ADDRESS</label>
                 <div className="relative">
                   <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
                   <input
@@ -548,7 +531,7 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
                   />
                 </div>
               </div>
-            )}
+            ) : <div />}
           </div>
         )}
 
