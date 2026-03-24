@@ -388,10 +388,34 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
         </div>
       </div>
 
-      {/* SECTION 2: WORK TYPE, TERRITORY, CHANNEL, ADDRESS */}
+      {/* SECTION 2: TERRITORY, WORK TYPE, CHANNEL, ADDRESS */}
       <div className="space-y-5">
 
-        {/* ROW 1: Work Type (full width) */}
+        {/* ROW 1: Service Territory (full width) */}
+        <div ref={terrRef}>
+          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT SERVICE TERRITORY</label>
+          <div className="relative">
+            <button
+              onClick={() => setIsTerrOpen(prev => !prev)}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 hover:border-gray-300 outline-none transition-all shadow-sm"
+            >
+              <span>{state.territory || 'San Francisco'}</span>
+              <ChevronDown size={14} className={`text-gray-400 transition-transform ${isTerrOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isTerrOpen && (
+              <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
+                {TERRITORIES.map(t => (
+                  <button key={t} onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }} className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
+                    {t}
+                    {state.territory === t && <Check size={13} className="text-blue-600" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ROW 2: Work Type (full width) */}
         <div ref={workRef}>
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT WORK TYPE</label>
           <div className="relative">
@@ -489,49 +513,20 @@ export const CustomerStep: React.FC<Props> = ({ state, updateState, onFastTrack,
           </div>
         )}
 
-        {/* ROW 3: Service Territory | Customer Address */}
-        {state.workType && (
-          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-            {/* Service Territory */}
-            <div ref={terrRef}>
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">SELECT SERVICE TERRITORY</label>
-              <div className="relative">
-                <button
-                  onClick={() => setIsTerrOpen(prev => !prev)}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 hover:border-gray-300 outline-none transition-all shadow-sm"
-                >
-                  <span>{state.territory || 'San Francisco'}</span>
-                  <ChevronDown size={14} className={`text-gray-400 transition-transform ${isTerrOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isTerrOpen && (
-                  <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-1">
-                    {TERRITORIES.map(t => (
-                      <button key={t} onClick={() => { updateState({ territory: t }); setIsTerrOpen(false); }} className={`w-full text-left px-3.5 py-2.5 text-[13px] font-medium flex items-center justify-between transition-colors ${state.territory === t ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50'}`}>
-                        {t}
-                        {state.territory === t && <Check size={13} className="text-blue-600" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+        {/* ROW 4: Customer Address — full width, only for In-Field */}
+        {state.workType && state.serviceMode === ServiceMode.IN_FIELD && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">CUSTOMER ADDRESS</label>
+            <div className="relative">
+              <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
+              <input
+                type="text"
+                value={state.location}
+                onChange={(e) => updateState({ location: e.target.value })}
+                className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 outline-none transition-all shadow-sm"
+                placeholder="Enter customer address"
+              />
             </div>
-
-            {/* Customer Address — only for In-Field */}
-            {state.serviceMode === ServiceMode.IN_FIELD ? (
-              <div className="animate-in fade-in duration-200">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block px-1 mb-1.5">CUSTOMER ADDRESS</label>
-                <div className="relative">
-                  <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 shrink-0" />
-                  <input
-                    type="text"
-                    value={state.location}
-                    onChange={(e) => updateState({ location: e.target.value })}
-                    className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-[13px] font-medium text-gray-800 focus:border-blue-400 outline-none transition-all shadow-sm"
-                    placeholder="Enter customer address"
-                  />
-                </div>
-              </div>
-            ) : <div />}
           </div>
         )}
 
